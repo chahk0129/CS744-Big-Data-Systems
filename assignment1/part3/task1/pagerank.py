@@ -24,10 +24,8 @@ def run_pagerank(input_path, num_iters=10):
     # Loads input files
     lines = spark.read.text(input_path).rdd.map(lambda r: r[0])
 
-
-
     # Read pages in input files and initialize their neighbors
-    links = lines.map(lambda pages: parse_neighbors(pages)).distinct().groupByKey().cache()
+    links = lines.map(lambda pages: parse_neighbors(pages)).distinct().groupByKey()
     
     # Initialize ranks
     ranks = links.map(lambda page_neighbors: (page_neighbors[0], 1.0))
@@ -48,9 +46,12 @@ def run_pagerank(input_path, num_iters=10):
     spark.stop()
 
 if __name__ == "__main__":
-    # small dataset for test
-    input_path = "hdfs://10.10.1.1:9000/user/hcha/assignment1/web-BerkStan.txt"
-    # input_path = "hdfs://10.10.1.1:9000/user/hcha/assignment1/enwiki-pages-articles"
-
+    if sys.argv[1] == 'web-BerkStan':    
+        # small dataset for test
+        input_path = "hdfs://10.10.1.1:9000/user/hcha/assignment1/web-BerkStan.txt"
+    elif sys.argv[1] =='enwiki-pages-articles':
+        input_path = "hdfs://10.10.1.1:9000/user/hcha/assignment1/enwiki-pages-articles"
+    else:
+        print("Usage: pagerank.py <file>, where <file>:='web-BerkStan'|'enwiki-pages-articles'", file=sys.stderr)
+        sys.exit(-1)
     run_pagerank(input_path)
-   
