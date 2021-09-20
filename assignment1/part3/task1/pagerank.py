@@ -1,3 +1,4 @@
+import time
 import re
 import sys
 from operator import add
@@ -15,7 +16,7 @@ def parse_neighbors(pages):
     neighbors = re.split(r'\s+', pages)
     return neighbors[0], neighbors[1]
 
-def run_pagerank(input_path, num_iters=10):
+def run_pagerank(input_path, output_path, num_iters=10):
     spark = (SparkSession.
             builder.
             appName("PageRank").
@@ -39,19 +40,30 @@ def run_pagerank(input_path, num_iters=10):
         # Re-calculates page ranks based on neighbor contributions.
         ranks = probs.reduceByKey(add).mapValues(lambda rank: rank * 0.85 + 0.15)
         
-    # Collects all page ranks and dump them to console.
-    for (link, rank) in ranks.collect():
-        print("%s has rank: %s." % (link, rank))
-
+    # Write output
+    ranks.saveAsTextFile(output_path)
+    #with open(output_path, 'a') as f:
+    #    for (link, rank) in ranks.collect():
+    #        f.write(str(link)+','+str(rank)+'\n')
     spark.stop()
 
 if __name__ == "__main__":
-    if sys.argv[1] == 'web-BerkStan':    
-        # small dataset for test
-        input_path = "hdfs://10.10.1.1:9000/user/hcha/assignment1/web-BerkStan.txt"
-    elif sys.argv[1] =='enwiki-pages-articles':
-        input_path = "hdfs://10.10.1.1:9000/user/hcha/assignment1/enwiki-pages-articles"
-    else:
-        print("Usage: pagerank.py <file>, where <file>:='web-BerkStan'|'enwiki-pages-articles'", file=sys.stderr)
+    if len(sys.argv) < 3:
+        print("Usage: pagerank.py <input> <output>")
         sys.exit(-1)
-    run_pagerank(input_path)
+
+    #if sys.argv[1] == 'web-BerkStan':    
+        # small dataset for test
+    #    input_path = "hdfs://10.10.1.1:9000/user/hcha/assignment1/web-BerkStan.txt"
+    #elif sys.argv[1] =='enwiki-pages-articles':
+    #    input_path = "hdfs://10.10.1.1:9000/user/hcha/assignment1/enwiki-pages-articles"
+    #else:
+    #    print("Usage: pagerank.py <file>, where <file>:='web-BerkStan'|'enwiki-pages-articles'", file=sys.stderr)
+    #    sys.exit(-1)
+
+    start = time.time()
+    run_pagerank(sys.argv[1], sys.argv[2])
+    end = time.time()
+    print("----------------------------------")
+    print("Elapsed time: " + str(end - start) + " sec")
+    print("----------------------------------")

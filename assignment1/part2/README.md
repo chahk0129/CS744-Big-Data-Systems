@@ -24,7 +24,7 @@ Enter the output path and press [ENTER]:hdfs://10.10.1.1:9000/user/hcha/assignme
 
 ### Check output file (10 lines)
 ```
-hdfs dfs -cat hdfs://10.10.1.1:9000/user/hcha/assignment1/output.csv/* 2>/dev/null | hea
+hdfs dfs -cat hdfs://10.10.1.1:9000/user/hcha/assignment1/output.csv/* 2>/dev/null | head
 ```
 
 ### Clear output file
