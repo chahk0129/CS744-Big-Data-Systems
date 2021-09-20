@@ -59,17 +59,20 @@ ssh node2 cat /proc/diskstats >> logs/datanode2_stat.before
 
 sleep 2
 
+driver_memory=8G
+executor_memory=8G
+
 ## Run pagerank application
 if [ "$1" = "web-BerkStan" ]; then
 	## add local input file (web-BerkStan.txt) to hdfs
 	hdfs dfs -put ../web-BerkStan.txt ${assignment1_dir}/web-BerkStan.txt
 	echo "Running pagerank with web-Berkstan.txt"
-	spark-submit pagerank.py ${assignment1_dir}/web-BerkStan.txt ${assignment1_dir}/web-BerkStan.out &> logs/web-BerkStan.log
+	spark-submit --class "pagerank" --driver-memory ${driver_memory} --executor-memory ${executor_memory} pagerank.py ${assignment1_dir}/web-BerkStan.txt ${assignment1_dir}/web-BerkStan.out &> logs/web-BerkStan.log
 else
 	## add local input file (enwiki-pages-articles) to hdfs
 	hdfs dfs -put /proj/uwmadison744-f21-PG0/data-part3/enwiki-pages-articles/ ${assignment1_dir}/enwiki-pages-articles
 	echo "Running pagerank with enwiki-pages-articles"
-	spark-submit pagerank.py ${assignment1_dir}/enwiki-pages-articles ${assignment1_dir}/enwiki-pages-articles.out &> logs/enwiki-pages-articles.log
+	spark-submit --class "pagerank" --driver-memory ${driver_memory} --executor-memory ${executor_memory} pagerank.py ${assignment1_dir}/enwiki-pages-articles ${assignment1_dir}/enwiki-pages-articles.out &> logs/enwiki-pages-articles.log
 fi
 
 sleep 2
