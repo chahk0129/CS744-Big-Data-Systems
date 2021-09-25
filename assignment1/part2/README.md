@@ -1,33 +1,15 @@
-### Make folders for assignment 1
-```
-hadoop fs -mkdir hdfs://10.10.1.1:9000/user
-hadoop fs -mkdir hdfs://10.10.1.1:9000/user/hcha
-hadoop fs -mkdir hdfs://10.10.1.1:9000/user/hcha/assignment1
-```
+# Part 2
 
-### Add local file (export.csv) to hdfs
+## How to run
+```bash
+$ ./run.sh $HOST_IP
 ```
-hdfs dfs -put export.csv hdfs://10.10.1.1:9000/user/hcha/assignment1/export.csv
-```
+$run.sh$ runs $part2_simple.py$ application which sorts the $export.csv$ data, and stores the ouptut in hdfs.\\
+When running, we first create appropriate directory paths.
+After, adding the local input file (i.e., export.csv) to hdfs, we validate the copy via reading the first 10 lines of the input in hdfs.
+Then, we run the application, and also check if the output file has been correctly written in hdfs by reading the first 10 lines of the output.\\
+$run.sh clear$ cleans up the input and output in hdfs stored during the previous execution.
 
-### Check hdfs file
-```
-hdfs dfs -cat hdfs://10.10.1.1:9000/user/hcha/assignment1/export.csv 2>/dev/null | head
-```
 
-### Run simple application
-```
-./run.sh
-Enter the input path and press [ENTER]:hdfs://10.10.1.1:9000/user/hcha/assignment1/export.csv
-Enter the output path and press [ENTER]:hdfs://10.10.1.1:9000/user/hcha/assignment1/output.csv
-```
-
-### Check output file (10 lines)
-```
-hdfs dfs -cat hdfs://10.10.1.1:9000/user/hcha/assignment1/output.csv/* 2>/dev/null | head
-```
-
-### Clear output file
-```
-hdfs dfs -rm -r hdfs://10.10.1.1:9000/user/hcha/assignment1/output.csv
-```
+## Application Detail
+We simply initialize spark sql instance, load input data, sort it firstly by country code and then by timestamp, and write the output.

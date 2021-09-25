@@ -17,11 +17,14 @@ def parse_neighbors(pages):
     return neighbors[0], neighbors[1]
 
 def run_pagerank(input_path, output_path, num_iters=10):
+    init_start = time.time()
     spark = (SparkSession.
             builder.
             appName("PageRank").
             getOrCreate())
-    
+    spark.conf.set("spark.executor.cores", "5").set("spark.task.cpus", "1")
+    init_end = time.time()
+
     # Loads input files
     lines = spark.read.text(input_path).rdd.map(lambda r: r[0])
 
@@ -30,6 +33,7 @@ def run_pagerank(input_path, output_path, num_iters=10):
     
     # Initialize ranks
     ranks = links.map(lambda page_neighbors: (page_neighbors[0], 1.0))
+    read_end = time.time()
 
     # Calculates and updates page ranks up to num_iters
     for iteration in range(num_iters):
@@ -39,31 +43,25 @@ def run_pagerank(input_path, output_path, num_iters=10):
 
         # Re-calculates page ranks based on neighbor contributions.
         ranks = probs.reduceByKey(add).mapValues(lambda rank: rank * 0.85 + 0.15)
+    compute_end = time.time()
         
     # Write output
     ranks.saveAsTextFile(output_path)
-    #with open(output_path, 'a') as f:
-    #    for (link, rank) in ranks.collect():
-    #        f.write(str(link)+','+str(rank)+'\n')
+    write_end = time.time()
     spark.stop()
+    end = time.time()
+    print("----------------------------------")
+    print("Init time: " + str(init_end - init_start) + " sec")
+    print("Read time: " + str(read_end - init_end) + " sec")
+    print("Compute time: " + str(compute_end - read_end) + " sec")
+    print("Write time: " + str(write_end - compute_end) + " sec")
+    print("Resource cleanup time: " + str(end - write_end) + " sec")
+    print("Total elapsed time: " + str(end - init_start) + " sec")
+    print("----------------------------------")
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: pagerank.py <input> <output>")
         sys.exit(-1)
 
-    #if sys.argv[1] == 'web-BerkStan':    
-        # small dataset for test
-    #    input_path = "hdfs://10.10.1.1:9000/user/hcha/assignment1/web-BerkStan.txt"
-    #elif sys.argv[1] =='enwiki-pages-articles':
-    #    input_path = "hdfs://10.10.1.1:9000/user/hcha/assignment1/enwiki-pages-articles"
-    #else:
-    #    print("Usage: pagerank.py <file>, where <file>:='web-BerkStan'|'enwiki-pages-articles'", file=sys.stderr)
-    #    sys.exit(-1)
-
-    start = time.time()
     run_pagerank(sys.argv[1], sys.argv[2])
-    end = time.time()
-    print("----------------------------------")
-    print("Elapsed time: " + str(end - start) + " sec")
-    print("----------------------------------")

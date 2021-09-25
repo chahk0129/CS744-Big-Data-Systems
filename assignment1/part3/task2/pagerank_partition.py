@@ -18,6 +18,7 @@ def run_pagerank(input_path, output_path, num_partitions=8, num_iters=10):
             builder.
             appName("PageRank").
             getOrCreate())
+    spark.conf.set("spark.executor.cores", "5").set("spark.task.cpus", "1")
     
     # Load input files
     lines = spark.read.text(input_path).rdd.map(lambda r: r[0])
@@ -50,14 +51,6 @@ if __name__ == "__main__":
         print("Usage: pagerank_partition.py <input> <output> <num_partition>")
         sys.exit(-1)
 
-    #if sys.argv[1] == 'web-BerkStan':    
-        # small dataset for test
-    #    input_path = "hdfs://10.10.1.1:9000/user/hcha/assignment1/web-BerkStan.txt"
-    #elif sys.argv[1] =='enwiki-pages-articles':
-    #    input_path = "hdfs://10.10.1.1:9000/user/hcha/assignment1/enwiki-pages-articles"
-    #else:
-    #    print("Usage: pagerank.py <file> <num_partitions>, where <file>:='web-BerkStan'|'enwiki-pages-articles'", file=sys.stderr)
-    #    sys.exit(-1)
     num_partitions = sys.argv[3]
     start = time.time()
     run_pagerank(sys.argv[1], sys.argv[2], num_partitions=int(num_partitions))

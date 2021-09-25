@@ -1,16 +1,15 @@
-### Run experiments - just added the number of partitions argument
-'web-BerkStan'|'enwiki-pages-articles'
-* web-BerkStan dataset (small dataset) with 256 data partitions
-```
-./run.sh
-Enter the dataset name ('web-BerkStan'|'enwiki-pages-articles') and press [ENTER]:web-BerkStan
-Enter the number of partitions and press [ENTER]:256
-```
+# Task 3
+This task runs a PageRank algorithm with different number of partitions and executor memory sizes with caching intermediate data.
 
-* enwiki-pages-articles (big dataset)
+## How to run
+```bash
+$ ./run.sh [options] [num_partition] [memory_size in GB] [host_IP]
+$ 	Options: 
+$	    [input_name]: pass either web-BerkStan or enwiki-pages-articles
+$	    [clear]: cleans up the output files written in hdfs directory
 ```
-./run.sh
-Enter the dataset name ('web-BerkStan'|'enwiki-pages-articles') and press [ENTER]:enwiki-pages-articles
-Enter the number of partitions and press [ENTER]:256
-```
+The script runs $pagerank_cache.py$ with two different datasets, i.e., web-BerkStan and enwiki-pages-articles.
 
+## Evaluation
+We evaluate the PageRank of two datasets with different number of partitions, and executor memory sizes with caching enabled.
+We also measure the statistics of disk and network for namenode and each datanode to see the changes.

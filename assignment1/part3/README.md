@@ -1,13 +1,12 @@
-# Prepare datasets
+# Part 3
 
-Small dataset (web-BerkStan)
-```
-wget https://snap.stanford.edu/data/web-BerkStan.txt.gz
-gzip -d web-BerkStan.txt.gz
-hdfs dfs -put web-BerkStan.txt hdfs://10.10.1.1:9000/user/hcha/assignment1/web-BerkStan.txt
-```
+## How to run
+Inside each task, we have a detailed README.md that explains how to run the application.
 
-Large dataset (enwiki-pages-articles)
-```
-hdfs dfs -put /proj/uwmadison744-f21-PG0/data-part3/enwiki-pages-articles/ hdfs://10.10.1.1:9000/user/hcha/assignment1/enwiki-pages-articles
-```
+
+## Directories
+$task1$ includes a PageRank algorithm that runs with default configurations. That is, driver and executor memory size of 30GB, 5 executor cores, and one CPU per task.\\
+$task2$ includes a PageRank algorithm that runs with different number of partitions and different executor memory sizes.\\
+$task3$ includes a PageRank algorithm that is similar to $task2$ except for caching intermediate data in memory.\\
+$task4$ includes a PageRank algorithm that is similar to $task3$, but it is designed to evaluate the effects when we kill a worker process.
+
