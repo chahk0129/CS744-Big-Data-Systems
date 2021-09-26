@@ -28,7 +28,7 @@ for dat in $dataset; do
 done
 
 
-## task2-1 -- test performance with different number of partitions
+## task2-1 -- test performance with different number of partitions (fixed mem, i.e., 30GB)
 cd ../task2
 for dat in $dataset; do
 	for part in $partition; do
@@ -46,7 +46,7 @@ for dat in $datset; do
 done
 
 
-## task3-1 -- test performance with different number of partitions
+## task3-1 -- test performance with different number of partitions (fixed mem, i.e., 30GB)
 cd ../task3
 for dat in $dataset; do
 	for partitions in 1 2 4 8 16 32 64 128 256; do

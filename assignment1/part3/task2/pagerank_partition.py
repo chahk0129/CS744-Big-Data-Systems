@@ -18,7 +18,6 @@ def run_pagerank(input_path, output_path, num_partitions=8, num_iters=10):
             builder.
             appName("PageRank").
             getOrCreate())
-    spark.conf.set("spark.executor.cores", "5").set("spark.task.cpus", "1")
     
     # Load input files
     lines = spark.read.text(input_path).rdd.map(lambda r: r[0])

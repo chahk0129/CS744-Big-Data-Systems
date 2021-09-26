@@ -44,20 +44,20 @@ assignment1_dir=${namenode_dir}/user/hcha/assignment1
 
 ## Collect stats before execution
 mkdir logs
-echo -e "---------- Network Stat. -------------" >> logs/$1_part$2_mem$3_namenode_stat.before
-cat /proc/net/dev >> logs/$1_part$2_mem$3_namenode_stat.before
-echo -e "\n\n---------- Disk Stat. -------------" >> logs/$1_part$2_mem$3_namenode_stat.before
-cat /proc/diskstats >> logs/$1_part$2_mem$3_namenode_stat.before
+echo -e "---------- Network Stat. (Before) -------------" >> logs/$1_part$2_mem$3_namenode.stat
+cat /proc/net/dev >> logs/$1_part$2_mem$3_namenode.stat
+echo -e "\n\n---------- Disk Stat. (Before) -------------" >> logs/$1_part$2_mem$3_namenode.stat
+cat /proc/diskstats >> logs/$1_part$2_mem$3_namenode.stat
 
-echo -e "---------- Network Stat. -------------" >> logs/$1_part$2_mem$3_datanode1_stat.before
-ssh node1 cat /proc/net/dev >> logs/$1_part$2_mem$3_datanode1_stat.before
-echo -e "\n\n---------- Disk Stat. -------------" >> logs/$1_part$2_mem$3_datanode1_stat.before
-ssh node1 cat /proc/diskstats >> logs/$1_part$2_mem$3_datanode1_stat.before
+echo -e "---------- Network Stat. (Before) -------------" >> logs/$1_part$2_mem$3_datanode1.stat
+ssh node1 cat /proc/net/dev >> logs/$1_part$2_mem$3_datanode1.stat
+echo -e "\n\n---------- Disk Stat. (Before) -------------" >> logs/$1_part$2_mem$3_datanode1.stat
+ssh node1 cat /proc/diskstats >> logs/$1_part$2_mem$3_datanode1.stat
 
-echo -e "---------- Network Stat. -------------" >> logs/$1_part$2_mem$3_datanode2_stat.before
-ssh node2 cat /proc/net/dev >> logs/$1_part$2_mem$3_datanode2_stat.before
-echo -e "\n\n---------- Disk Stat. -------------" >> logs/$1_part$2_mem$3_datanode2_stat.before
-ssh node2 cat /proc/diskstats >> logs/$1_part$2_mem$3_datanode2_stat.before
+echo -e "---------- Network Stat. (Before) -------------" >> logs/$1_part$2_mem$3_datanode2.stat
+ssh node2 cat /proc/net/dev >> logs/$1_part$2_mem$3_datanode2.stat
+echo -e "\n\n---------- Disk Stat. (Before) -------------" >> logs/$1_part$2_mem$3_datanode2.stat
+ssh node2 cat /proc/diskstats >> logs/$1_part$2_mem$3_datanode2.stat
 
 sleep 2
 
@@ -83,20 +83,20 @@ fi
 sleep 2
 
 ## Collect stats after execution
-echo -e "---------- Network Stat. -------------" >> logs/$1_part$2_mem$3_namenode_stat.after
-cat /proc/net/dev >> logs/$1_part$2_mem$3_namenode_stat.after
-echo -e "\n\n---------- Disk Stat. -------------" >> logs/$1_part$2_mem$3_namenode_stat.after
-cat /proc/diskstats >> logs/$1_part$2_mem$3_namenode_stat.after
+echo -e "---------- Network Stat. (After) -------------" >> logs/$1_part$2_mem$3_namenode.stat
+cat /proc/net/dev >> logs/$1_part$2_mem$3_namenode.stat
+echo -e "\n\n---------- Disk Stat. (After) -------------" >> logs/$1_part$2_mem$3_namenode.stat
+cat /proc/diskstats >> logs/$1_part$2_mem$3_namenode.stat
 
-echo -e "---------- Network Stat. -------------" >> logs/$1_part$2_mem$3_datanode1_stat.after
-ssh node1 cat /proc/net/dev >> logs/$1_part$2_mem$3_datanode1_stat.after
-echo -e "\n\n---------- Disk Stat. -------------" >> logs/$1_part$2_mem$3_datanode1_stat.after
-ssh node1 cat /proc/diskstats >> logs/$1_part$2_mem$3_datanode1_stat.after
+echo -e "---------- Network Stat. (After) -------------" >> logs/$1_part$2_mem$3_datanode1.stat
+ssh node1 cat /proc/net/dev >> logs/$1_part$2_mem$3_datanode1.stat
+echo -e "\n\n---------- Disk Stat. (After) -------------" >> logs/$1_part$2_mem$3_datanode1.stat
+ssh node1 cat /proc/diskstats >> logs/$1_part$2_mem$3_datanode1.stat
 
-echo -e "---------- Network Stat. -------------" >> logs/$1_part$2_mem$3_datanode2_stat.after
-ssh node2 cat /proc/net/dev >> logs/$1_part$2_mem$3_datanode2_stat.after
-echo -e "\n\n---------- Disk Stat. -------------" >> logs/$1_part$2_mem$3_datanode2_stat.after
-ssh node2 cat /proc/diskstats >> logs/$1_part$2_mem$3_datanode2_stat.after
+echo -e "---------- Network Stat. (After) -------------" >> logs/$1_part$2_mem$3_datanode2.stat
+ssh node2 cat /proc/net/dev >> logs/$1_part$2_mem$3_datanode2.stat
+echo -e "\n\n---------- Disk Stat. (After) -------------" >> logs/$1_part$2_mem$3_datanode2.stat
+ssh node2 cat /proc/diskstats >> logs/$1_part$2_mem$3_datanode2.stat
 
 
 
