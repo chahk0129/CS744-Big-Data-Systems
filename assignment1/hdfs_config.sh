@@ -6,11 +6,15 @@ sudo apt update
 sudo apt install openjdk-8-jdk
 
 ## mount disk
+hadoop_data_path=/mnt/data/hdfs
+spark_data_path=/mnt/data/spark
 sudo mkfs.ext4 /dev/xvda4
 sudo mkdir -p /mnt/data
 sudo mount /dev/xvda4 /mnt/data
-sudo mkdir /mnt/data/spark
-sudo chown hcha /mnt/data/spark
+sudo mkdir ${hadoop_data_path} ${hadoop_data_path}/datanode ${hadoop_data_path}/namenode
+sudo mkdir ${spark_data_path} ${spark_data_path}/logs
+sudo chown -R hcha /mnt/data
+sudo chmod -R 777 /mnt/data
 
 ## install hadoop
 wget https://dlcdn.apache.org/hadoop/common/hadoop-3.2.2/hadoop-3.2.2.tar.gz
@@ -34,9 +38,7 @@ echo "10.10.1.3" >> ${hadoop_home}/etc/hadoop/workers
 ## set namenode IP address
 sed -i 's!<configuration>!<configuration>\n<property>\n<name>fs.default.name</name>\n<value>hdfs://10.10.1.1:9000</value>\n</property>!' $(hadoop_home)/etc/hadoop/core-site.xml;
 
-## set data path for namenode
-data_dir=hadoop-3.2.2/data
-mkdir ${data_dir}
-namenode_dir=${data_dir}/namenode
-datanode_dir=${data_dir}/datanode
+## set data path for namenode and datanodes
+namenode_dir=${hadoop_data_path}/namenode
+datanode_dir=${hadoop_data_path}/datanode
 sed -i 's!<configuration>!<configuration>\n<property>\n<name>dfs.namenode.name.dir</name>\n<value>/users/hcha/'$namenode_dir'/</value>\n</property>\n<property>\n<name>dfs.datanode.data.dir</name>\n<value>/users/hcha/'$datanode_dir'/</value>\n</property>!' $(hadoop_home)/etc/hadoop/hdfs-site.xml;
