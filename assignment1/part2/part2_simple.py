@@ -15,7 +15,8 @@ def simple_application(input_path, output_path):
     df_sorted = df.sort(['cca2', 'timestamp'], ascending=[True, True])
 
     # write output
-    df_sorted.write.csv(output_path, header=True)
+    df_sorted.coalesce(1).write.mode('overwrite').option('header','true').csv(output_path)
+
 
 if __name__ == "__main__":
     print("Arguments", sys.argv)
