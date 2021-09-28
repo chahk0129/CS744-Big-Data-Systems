@@ -16,6 +16,14 @@ if [  "$1" = "clear" ]; then
 	exit 1
 fi
 
+## check input ip
+if [ "$1" = "" ]; then
+	echo "Usage: ./run.sh [options]"
+	echo -e "\t[host_ip]: runs simple sort application with host IP address"
+	echo -e "\t[clear]: cleans up the output in hdfs directory"
+	exit 1
+fi
+
 ## create local data directory to store the returned input and output after execution
 mkdir data
 
