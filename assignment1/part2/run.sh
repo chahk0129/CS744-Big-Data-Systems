@@ -38,13 +38,15 @@ assignment1_dir=${namenode_dir}/user/hcha/assignment1
 hdfs dfs -put export.csv ${assignment1_dir}/export.csv
 
 ## Validate the hdfs input file
-hdfs dfs -cat ${assignment1_dir}/export.csv 2>/dev/null | head > data/before.out
+hdfs dfs -cat ${assignment1_dir}/export.csv 2>/dev/null | head 
+
+ip=$1
 
 ## Run the simple application (sort)
-spark-submit --master spark://$ip:7077 --class "simple_sort" --driver-memory 30G --executor-memory 30G --num-executor 2 --executor-cores 5 part2_simple.py ${assignment1_dir}/export.csv ${assignment1_dir}/output.csv
+spark-submit --master spark://$ip:7077 --class "simple_sort" --driver-memory 30G --executor-memory 30G --num-executors 2 --executor-cores 5 part2_simple.py ${assignment1_dir}/export.csv ${assignment1_dir}/output.csv
 
 ## Read output file
-hdfs dfs -cat ${assignment1_dir}/output.csv/* 2>dev/null | head > data/after.out
+hdfs dfs -cat ${assignment1_dir}/output.csv/* 2>/dev/null | head 
 
 ## Enter hdfs safemode
 hdfs dfsadmin -safemode enter
