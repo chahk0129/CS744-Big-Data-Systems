@@ -1,5 +1,5 @@
 # Task 1
-This task simply runs a PageRank algorithm with default settings.
+This task runs a PageRank algorithm with default settings.
 
 ## How to run
 ```bash

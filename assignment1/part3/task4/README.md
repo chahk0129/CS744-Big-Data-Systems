@@ -1,10 +1,10 @@
 # Task 4
 This task runs a PageRank algorithm with different number of partitions and executor memory sizes with caching intermediate data.
-It is designed to see the effects of a worker process kill during the execution.
+It is particularly designed to see the effects of a worker process kill during the execution.
 
 ## How to run
 ```bash
-$ ./run.sh [options] [num_partition] [memory_size in GB]
+$ ./run.sh [options] [num_partition] [memory_size in GB] [host IP]
 $ 	Options: 
 $	    [input_name]: pass either web-BerkStan or enwiki-pages-articles
 $	    [clear]: cleans up the output files written in hdfs directory

@@ -31,8 +31,8 @@ Instead we pass the absolute path of the dataset when running the application.
 ```bash
 $ ./run_all.sh
 ```
-> `run_all.sh` runs all the tests three times from part 2 to part 3 except for the last task in part 3.<br/>
-> For the last task in part 3, we manually run the test and kill a worker based on the status of job execution by monitoring spark status page.
+> `run_all.sh` runs all the tests including part 2 and part 3 except for task 4 in part 3.<br/>
+> For task 4 in part 3, we manually run the test and kill a worker process based on the status of job execution by monitoring spark health page.
 
 
 ## Directories
