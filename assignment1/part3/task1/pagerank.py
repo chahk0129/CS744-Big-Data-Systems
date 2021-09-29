@@ -12,12 +12,8 @@ def compute_probs(pages, rank):
     for page in pages:
         yield (page, rank / num_pages)
 
-def parse_neighbors(pages, input_path):
-    if 'web' in input_path: # web-BerkStan
-        neighbors = re.split(r'\s+', pages)
-    else: # enwiki
-        neighbors = re.split(r'\t+', pages) 
-    
+def parse_neighbors(pages):
+    neighbors = re.split(r'\s+', pages) 
     return neighbors[0], neighbors[1]
 
 def run_pagerank(input_path, output_path, num_iters=10):
@@ -32,7 +28,7 @@ def run_pagerank(input_path, output_path, num_iters=10):
     lines = spark.read.text(input_path).rdd.map(lambda r: r[0])
 
     # Read pages in input files and initialize their neighbors
-    links = lines.map(lambda pages: parse_neighbors(pages, input_path)).distinct().groupByKey()
+    links = lines.map(lambda pages: parse_neighbors(pages)).distinct().groupByKey()
     
     # Initialize ranks
     ranks = links.map(lambda page_neighbors: (page_neighbors[0], 1.0))
