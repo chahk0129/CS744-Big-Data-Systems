@@ -11,4 +11,4 @@ source ~/.bashrc
 conda install numpy
 
 ## install pytorch
-conda install pythorch torchvision torchaudio cpuonly -c pytorch
+conda install pytorch torchvision torchaudio cpuonly -c pytorch
