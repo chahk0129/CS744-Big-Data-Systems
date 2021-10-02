@@ -145,7 +145,7 @@ if __name__ == "__main__":
     parser.add_argument('--rank', type=int, default=0, help='rank of node')
     parser.add_argument('--epoch', type=int, default=1, help='the number of epochs (default:1)')
     parser.add_argument('--exp_iter', type=int, default=10, help='the number of one epoch training (default:10)')
-    parser.add_argument('--output_path', type=str, default='elapsed_time_part2a.csv', help='output (elapsed time) path')
+    parser.add_argument('--output_path', type=str, default='elapsed_time_part2b.csv', help='output (elapsed time) path')
     args = parser.parse_args()
     init_process(args.master_ip, args.rank, args.num_nodes, run)
 
