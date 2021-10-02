@@ -65,7 +65,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
         optimizer.step()
         if batch_idx % log_iter == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                epoch, batch_idx * len(data), len(train_loader.dataset),
+                epoch, batch_idx * len(data) * group_size, len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item()))
     return None
 
