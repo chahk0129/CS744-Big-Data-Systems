@@ -142,7 +142,7 @@ def run(rank, size):
         test_model(model, test_loader, training_criterion)
         elapsed_time = time.time() - start_time
         df = df.append({
-            'exp_num': exp_num,
+            'epoch': epoch,
             'elapsed_time': elpased_time
         }, ignore_index=True)
     df.to_csv(args.output_path)
