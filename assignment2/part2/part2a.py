@@ -49,8 +49,8 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
         group_size = len(group_list)
         # Collecting gradients
         for params in model.parameters():
-            grad_list = [torch.zeros_like(param.grad) for _ in range(group_size)]
-            dist.gather(param.grad, grad_list, group=group, async_op=False)
+            grad_list = [torch.zeros_like(params.grad) for _ in range(group_size)]
+            dist.gather(params.grad, grad_list, group=group, async_op=False)
 
             grad_sum = torch.zeros_like(params.grad)
             for i in range(group_size):
