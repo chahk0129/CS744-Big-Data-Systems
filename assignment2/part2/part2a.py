@@ -18,7 +18,7 @@ from torch.utils.data.distributed import DistributedSampler
 device = "cpu"
 torch.set_num_threads(4)
 batch_size = 256 # batch for one node
-log_iter = 4 # test
+log_iter = 20t
 group_list = [0, 1, 2, 3]
 
 def train_model(model, train_loader, optimizer, criterion, epoch, rank):
@@ -34,16 +34,12 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
     group = dist.new_group(group_list)
     
     # remember to exit the train loop at end of the epoch
-    running_loss = 0
-    running_count = 0
     for batch_idx, (data, target) in enumerate(train_loader):
         # Reference: https://github.com/pytorch/examples/blob/master/mnist/main.py
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
         loss = criterion(output, target)
-        running_loss += loss.item()
-        running_count += batch_size
         loss.backward()
 
         group_size = len(group_list)
@@ -71,10 +67,6 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item()))
-            # reset running loss, count
-            running_loss = 0
-            running_count = 0
-
     return None
 
 def test_model(model, test_loader, criterion):
@@ -164,7 +156,7 @@ if __name__ == "__main__":
     parser.add_argument('--size', type=int, default=4, help='the size of group')
     parser.add_argument('--epoch', type=int, default=1, help='the number of epochs (default:1)')
     parser.add_argument('--exp_iter', type=int, default=10, help='the number of one epoch training (default:10)')
-    parser.add_argument('--output_path', type=str, default='elapsed_time.csv', help='output (elapsed time) path')
+    parser.add_argument('--output_path', type=str, default='elapsed_time_part2a.csv', help='output (elapsed time) path')
     args = parser.parse_args()
     init_process(args.master_ip, args.rank, args.size, run)
 
