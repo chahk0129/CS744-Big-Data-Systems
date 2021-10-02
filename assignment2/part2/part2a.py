@@ -34,8 +34,8 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
     group = dist.new_group(group_list)
     
     # remember to exit the train loop at end of the epoch
+    start_time = time.time()
     for batch_idx, (data, target) in enumerate(train_loader):
-        start_time = time.time()
         # Reference: https://github.com/pytorch/examples/blob/master/mnist/main.py
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
@@ -69,6 +69,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\t elapsed time: {:.3f}'.format(
                 epoch, batch_idx * len(data) * group_size, len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item(), elapsed_time))
+            start_time = time.time()
     return None
 
 def test_model(model, test_loader, criterion):
