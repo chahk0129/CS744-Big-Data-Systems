@@ -47,17 +47,24 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
         loss.backward()
 
         group_size = len(group_list)
-        # Collecting gradients
-        for params in model.parameters():
-            grad_list = [torch.zeros_like(params.grad) for _ in range(group_size)]
-            dist.gather(params.grad, grad_list, group=group, async_op=False)
 
-            grad_sum = torch.zeros_like(params.grad)
-            for i in range(group_size):
-                grad_sum += grad_list[i]
-            grad_mean = grad_sum / group_size
+        # Communicating gradients
+        if rank == 0:
+            for params in model.parameters():
+                grad_list = [torch.zeros_like(params.grad) for _ in range(group_size)]
+                dist.gather(params.grad, grad_list, group=group, async_op=False)
+
+                grad_sum = torch.zeros_like(params.grad)
+                for i in range(group_size):
+                    grad_sum += grad_list[i]
+                grad_mean = grad_sum / group_size
             
-            scatter_list = [grad_mean] * group_size
+                scatter_list = [grad_mean] * group_size
+                dist.scatter(p.grad, scatter_list, group, src=0, async_op=False)
+        else:
+            for params in model.parameters():
+                dist.gather(params.grad, group=group, async_op=False)
+                dist.scatter(params.grad, group=group, src=0, async_op=False)
             
         optimizer.step()
         if batch_idx % log_iter == 0:
