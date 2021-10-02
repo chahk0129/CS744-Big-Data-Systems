@@ -60,7 +60,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
                 grad_mean = grad_sum / group_size
             
                 scatter_list = [grad_mean] * group_size
-                dist.scatter(params.grad, scatter_list, group, src=0, async_op=False)
+                dist.scatter(params.grad, scatter_list, group=group, src=0, async_op=False)
         else:
             for params in model.parameters():
                 dist.gather(params.grad, group=group, async_op=False)
