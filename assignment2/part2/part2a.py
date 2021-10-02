@@ -52,7 +52,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
             grad_list = [torch.zeros_like(param.grad) for _ in range(group_size)]
             dist.gather(param.grad, grad_list, group=group, async_op=False)
 
-            grad_sum = torch.zeros_like(param.grad)
+            grad_sum = torch.zeros_like(params.grad)
             for i in range(group_size):
                 grad_sum += grad_list[i]
             grad_mean = grad_sum / group_size
