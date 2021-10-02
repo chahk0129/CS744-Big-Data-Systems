@@ -18,7 +18,7 @@ from torch.utils.data.distributed import DistributedSampler
 device = "cpu"
 torch.set_num_threads(4)
 batch_size = 256 # batch for one node
-log_iter = 20
+log_iter = 4 # test
 group_list = [0, 1, 2, 3]
 
 def train_model(model, train_loader, optimizer, criterion, epoch, rank):
