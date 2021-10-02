@@ -68,7 +68,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
             elapsed_time = time.time() - start_time
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\t elapsed time: {:.3f}'.format(
                 epoch, batch_idx * len(data) * group_size, len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.item(), elapsed_time)
+                100. * batch_idx / len(train_loader), loss.item(), elapsed_time))
     return None
 
 def test_model(model, test_loader, criterion):
