@@ -63,7 +63,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
                 dist.scatter(params.grad, group=group, src=0, async_op=False)
             
         optimizer.step()
-        if batch_idx % log_iter == 0:
+        if (batch_idx % log_iter == 0) or (batch_idx == 9):
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data) * group_size, len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item()))
@@ -143,7 +143,7 @@ def run(rank, size):
         elapsed_time = time.time() - start_time
         df = df.append({
             'epoch': epoch,
-            'elapsed_time': elpased_time
+            'elapsed_time': elapsed_time
         }, ignore_index=True)
     df.to_csv(args.output_path)
 
@@ -153,11 +153,10 @@ if __name__ == "__main__":
     parser.add_argument('--master-ip', type=str, default='10.10.1.1', help='master node ip (default: 10.10.1.1)')
     parser.add_argument('--num-nodes', type=int, default=4, help='the number of nodes (default:4)')
     parser.add_argument('--rank', type=int, default=0, help='rank of node')
-    parser.add_argument('--size', type=int, default=4, help='the size of group')
     parser.add_argument('--epoch', type=int, default=1, help='the number of epochs (default:1)')
     parser.add_argument('--exp_iter', type=int, default=10, help='the number of one epoch training (default:10)')
     parser.add_argument('--output_path', type=str, default='elapsed_time_part2a.csv', help='output (elapsed time) path')
     args = parser.parse_args()
-    init_process(args.master_ip, args.rank, args.size, run)
+    init_process(args.master_ip, args.rank, args.num_nodes, run)
 
 
