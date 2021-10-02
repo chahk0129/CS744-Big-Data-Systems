@@ -22,6 +22,7 @@ torch.set_num_threads(4)
 batch_size = 64 # batch for one node
 log_iter = 20
 group_list = [0, 1, 2, 3]
+group_size = len(group_list)
 
 def train_model(model, train_loader, optimizer, criterion, epoch, rank):
     """
