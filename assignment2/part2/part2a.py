@@ -17,8 +17,8 @@ import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 device = "cpu"
 torch.set_num_threads(4)
-batch_size = 256 # batch for one node
-log_iter = 20t
+batch_size = 64 # batch for one node
+log_iter = 20
 group_list = [0, 1, 2, 3]
 
 def train_model(model, train_loader, optimizer, criterion, epoch, rank):
@@ -113,10 +113,11 @@ def run(rank, size):
             normalize])
     training_set = datasets.CIFAR10(root="./data", train=True,
                                                 download=True, transform=transform_train)
+    sampler = DistributedSampler(training_set) if torch.distributed.is_available() else None
     train_loader = torch.utils.data.DataLoader(training_set,
                                                     num_workers=2,
                                                     batch_size=batch_size,
-                                                    sampler=None,
+                                                    sampler=sampler,
                                                     shuffle=True,
                                                     pin_memory=True)
     test_set = datasets.CIFAR10(root="./data", train=False,
