@@ -63,7 +63,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
                 dist.scatter(params.grad, group=group, src=0, async_op=False)
             
         optimizer.step()
-        if (batch_idx % log_iter == 0) or (batch_idx == 9):
+        if (batch_idx % log_iter == 0) or (batch_idx == len(train_loader)-1):
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data) * group_size, len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item()))
