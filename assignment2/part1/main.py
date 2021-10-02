@@ -125,7 +125,7 @@ def main():
         elapsed_time = time.time() - start_time
         df = df.append({
             'exp_num': exp_num,
-            'elapsed_time': elpased_time
+            'elapsed_time': elapsed_time
         }, ignore_index=True)
     df.to_csv(args.output_path)
 
