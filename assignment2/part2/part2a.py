@@ -138,7 +138,8 @@ def run(rank, size):
     df = pd.DataFrame()
     for epoch in range(1):
         start_time = time.time()
-        train_model(model, train_loader, optimizer, training_criterion, epoch)
+        train_model(model, train_loader, optimizer,
+                training_criterion, epoch, rank)
         test_model(model, test_loader, training_criterion)
         elapsed_time = time.time() - start_time
         df = df.append({
