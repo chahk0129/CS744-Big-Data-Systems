@@ -17,7 +17,7 @@ import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 device = "cpu"
 torch.set_num_threads(4)
-batch_size = 64 # batch for one node
+batch_size = 256 # batch for one node
 log_iter = 20
 group_list = [0, 1, 2, 3]
 
@@ -46,10 +46,23 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
         group_size = len(group_list)
 
         # Communicating gradients
-        for params in model.parameters():
-            params.grad = params.grad / group_size
-            dist.all_reduce(params.grad, op=dist.reduce_op.SUM, group=group, async_op=False)
-        
+        if rank == 0:
+            for params in model.parameters():
+                grad_list = [torch.zeros_like(params.grad) for _ in range(group_size)]
+                dist.gather(params.grad, grad_list, group=group, async_op=False)
+
+                grad_sum = torch.zeros_like(params.grad)
+                for i in range(group_size):
+                    grad_sum += grad_list[i]
+                grad_mean = grad_sum / group_size
+            
+                scatter_list = [grad_mean] * group_size
+                dist.scatter(params.grad, scatter_list, group=group, src=0, async_op=False)
+        else:
+            for params in model.parameters():
+                dist.gather(params.grad, group=group, async_op=False)
+                dist.scatter(params.grad, group=group, src=0, async_op=False)
+            
         optimizer.step()
         if (batch_idx % log_iter == 0):
             elapsed_time = time.time() - start_time
@@ -145,8 +158,11 @@ if __name__ == "__main__":
     parser.add_argument('--rank', type=int, default=0, help='rank of node')
     parser.add_argument('--epoch', type=int, default=1, help='the number of epochs (default:1)')
     parser.add_argument('--exp_iter', type=int, default=10, help='the number of one epoch training (default:10)')
-    parser.add_argument('--output_path', type=str, default='elapsed_time_part2b.csv', help='output (elapsed time) path')
+    parser.add_argument('--output_path', type=str, default='elapsed_time_part2a.csv', help='output (elapsed time) path')
     args = parser.parse_args()
+
+    batch_size = batch_size // args.num_nodes
+
     init_process(args.master_ip, args.rank, args.num_nodes, run)
 
 

@@ -19,7 +19,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 
 device = "cpu"
 torch.set_num_threads(4)
-batch_size = 64 # batch for one node
+batch_size = 256 # batch for one node
 log_iter = 20
 group_list = [0, 1, 2, 3]
 group_size = len(group_list)
@@ -144,6 +144,9 @@ if __name__ == "__main__":
     parser.add_argument('--exp_iter', type=int, default=10, help='the number of one epoch training (default:10)')
     parser.add_argument('--output_path', type=str, default='elapsed_time_part3.csv', help='output (elapsed time) path')
     args = parser.parse_args()
+
+    batch_size = batch_size // args.num_nodes
+
     init_process(args.master_ip, args.rank, args.num_nodes, run)
 
 

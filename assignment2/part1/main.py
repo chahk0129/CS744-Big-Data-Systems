@@ -73,14 +73,13 @@ def main():
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--master-ip', type=str, default='10.10.1.1', help='master node ip (default: 10.10.1.1)')
-    parser.add_argument('--num-nodes', type=int, default=4, help='the number of nodes (default:4)')
+    parser.add_argument('--num-nodes', type=int, default=1, help='the number of nodes (default:1)')
     parser.add_argument('--rank', type=int, default=0, help='rank of node')
     parser.add_argument('--epoch', type=int, default=1, help='the number of epochs (default:1)')
     parser.add_argument('--exp_iter', type=int, default=10, help='the number of one epoch training (default:10)')
     parser.add_argument('--output_path', type=str, default='elapsed_time.csv', help='output (elapsed time) path')
     args = parser.parse_args()
     epoch = args.epoch
-
 
     normalize = transforms.Normalize(mean=[x/255.0 for x in [125.3, 123.0, 113.9]],
                                 std=[x/255.0 for x in [63.0, 62.1, 66.7]])
