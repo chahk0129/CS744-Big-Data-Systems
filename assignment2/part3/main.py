@@ -21,8 +21,7 @@ device = "cpu"
 torch.set_num_threads(4)
 batch_size = 256 # batch for one node
 log_iter = 20
-group_list = [0, 1, 2, 3]
-group_size = len(group_list)
+group_list = []
 
 def train_model(model, train_loader, optimizer, criterion, epoch, rank):
     """
@@ -35,6 +34,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
 
     # declare groups 
     group = dist.new_group(group_list)
+    group_size = len(group_list)
     
     # remember to exit the train loop at end of the epoch
     start_time = time.time()
@@ -146,6 +146,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     batch_size = batch_size // args.num_nodes
+    for group in range(0, args.num_nodes):
+        group_list.append(group)
 
     init_process(args.master_ip, args.rank, args.num_nodes, run)
 
