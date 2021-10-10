@@ -16,7 +16,6 @@ import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 device = "cpu"
 torch.set_num_threads(4)
-total_batch_size = 256 # batch for one node
 log_iter = 20
 group_list = []
 
@@ -143,10 +142,13 @@ if __name__ == "__main__":
     parser.add_argument('--rank', type=int, default=0, help='rank of node')
     parser.add_argument('--epoch', type=int, default=1, help='the number of epochs (default:1)')
     parser.add_argument('--stop_iter', type=int, default=40, help='Stop iteration at, (default: 40)')
+    parser.add_argument('--total_batch_size', type=int, default=256, help='total batch size')
+    
     args = parser.parse_args()
 
     global batch_size, num_epochs, stop_iter
     global log_file_name
+    total_batch_size = args.total_batch_size
     batch_size = int(total_batch_size // args.num_nodes)
     num_epochs = args.epoch
     stop_iter = args.stop_iter
@@ -154,7 +156,7 @@ if __name__ == "__main__":
     num_nodes = args.num_nodes
     rank = args.rank
 
-    log_file_name = f"timelog_{num_epochs}_{stop_iter}_{num_nodes}.csv"
+    log_file_name = f"timelog_{num_epochs}_{stop_iter}_{num_nodes}_{batch_size}.csv"
     with open(f'output/{log_file_name}', 'w+') as f:
         f.write("epoch,iteration,elpased_time\n")
     
