@@ -4,7 +4,6 @@ import torch
 import json
 import copy
 import numpy as np
-import pandas as pd
 from torchvision import datasets, transforms
 import torch.nn as nn
 import torch.nn.functional as F
@@ -17,7 +16,7 @@ import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 device = "cpu"
 torch.set_num_threads(4)
-batch_size = 256 # batch for one node
+total_batch_size = 256 # batch for one node
 log_iter = 20
 group_list = []
 
@@ -36,39 +35,49 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
     
     # remember to exit the train loop at end of the epoch
     start_time = time.time()
-    for batch_idx, (data, target) in enumerate(train_loader):
-        # Reference: https://github.com/pytorch/examples/blob/master/mnist/main.py
-        data, target = data.to(device), target.to(device)
-        optimizer.zero_grad()
-        output = model(data)
-        loss = criterion(output, target)
-        loss.backward()
+    log_iter_start_time = time.time()
+    with open(f'output/{log_file_name}', 'a+') as f:
+        for batch_idx, (data, target) in enumerate(train_loader):
+            if batch_idx >= stop_iter:
+                break
+            # Reference: https://github.com/pytorch/examples/blob/master/mnist/main.py
+            data, target = data.to(device), target.to(device)
+            optimizer.zero_grad()
+            output = model(data)
+            loss = criterion(output, target)
+            loss.backward()
 
-        # Communicating gradients
-        if rank == 0:
-            for params in model.parameters():
-                grad_list = [torch.zeros_like(params.grad) for _ in range(group_size)]
-                dist.gather(params.grad, grad_list, group=group, async_op=False)
+            # Communicating gradients
+            if rank == 0:
+                for params in model.parameters():
+                    grad_list = [torch.zeros_like(params.grad) for _ in range(group_size)]
+                    dist.gather(params.grad, grad_list, group=group, async_op=False)
 
-                grad_sum = torch.zeros_like(params.grad)
-                for i in range(group_size):
-                    grad_sum += grad_list[i]
-                grad_mean = grad_sum / group_size
-            
-                scatter_list = [grad_mean] * group_size
-                dist.scatter(params.grad, scatter_list, group=group, src=0, async_op=False)
-        else:
-            for params in model.parameters():
-                dist.gather(params.grad, group=group, async_op=False)
-                dist.scatter(params.grad, group=group, src=0, async_op=False)
-            
-        optimizer.step()
-        if (batch_idx % log_iter == 0):
+                    grad_sum = torch.zeros_like(params.grad)
+                    for i in range(group_size):
+                        grad_sum += grad_list[i]
+                    grad_mean = grad_sum / group_size
+                
+                    scatter_list = [grad_mean] * group_size
+                    dist.scatter(params.grad, scatter_list, group=group, src=0, async_op=False)
+            else:
+                for params in model.parameters():
+                    dist.gather(params.grad, group=group, async_op=False)
+                    dist.scatter(params.grad, group=group, src=0, async_op=False)
+                
+            optimizer.step()
+
+            # logging
             elapsed_time = time.time() - start_time
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\t elapsed time: {:.3f}'.format(
-                epoch, batch_idx * len(data) * group_size, len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.item(), elapsed_time))
+            f.write(f"{epoch},{batch_count},{elapsed_time}\n")
             start_time = time.time()
+
+            if (batch_idx % log_iter == 0):
+                log_iter_elapsed_time = time.time() - log_iter_start_time
+                print('Train Epoch: {} \t Iteration: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\t elapsed time: {:.3f}'.format(
+                    epoch, batch_count, batch_count * len(data) * group_size, len(train_loader.dataset),
+                    100. * batch_count / len(train_loader), loss.item(), log_iter_elapsed_time)) 
+                log_iter_start_time = time.time()
     return None
 
 def test_model(model, test_loader, criterion):
@@ -91,9 +100,8 @@ def test_model(model, test_loader, criterion):
 
 def init_process(master_ip, rank, size, fn, backend='gloo'):
     """ Initialize the distributed environment. """
-    os.environ['MASTER_ADDR'] = master_ip
-    os.environ['MASTER_PORT'] = '29500'
-    dist.init_process_group(backend, rank=rank, world_size=size)
+    dist.init_process_group(backend, init_method=f"tcp://{master_ip}:6585",
+                            rank=rank, world_size=size)
     fn(rank, size)
 
 
@@ -135,35 +143,30 @@ def run(rank, size):
     model.to(device)
     optimizer = optim.SGD(model.parameters(), lr=0.1,
                           momentum=0.9, weight_decay=0.0001)
-    # running training for one epoch
-    df = pd.DataFrame()
-    for epoch in range(1):
-        start_time = time.time()
-        train_model(model, train_loader, optimizer,
-                training_criterion, epoch, rank)
-        test_model(model, test_loader, training_criterion)
-        elapsed_time = time.time() - start_time
-        df = df.append({
-            'epoch': epoch,
-            'elapsed_time': elapsed_time
-        }, ignore_index=True)
-    df.to_csv(args.output_path)
 
-
+    for epoch in range(num_epochs):
+        train_model(model, train_loader, optimizer, training_criterion, epoch, rank)
+    test_model(model, test_loader, training_criterion)
+    
 if __name__ == "__main__":  
     parser = argparse.ArgumentParser()
     parser.add_argument('--master-ip', type=str, default='10.10.1.1', help='master node ip (default: 10.10.1.1)')
     parser.add_argument('--num-nodes', type=int, default=4, help='the number of nodes (default:4)')
     parser.add_argument('--rank', type=int, default=0, help='rank of node')
     parser.add_argument('--epoch', type=int, default=1, help='the number of epochs (default:1)')
-    parser.add_argument('--exp_iter', type=int, default=10, help='the number of one epoch training (default:10)')
-    parser.add_argument('--output_path', type=str, default='elapsed_time_part2a.csv', help='output (elapsed time) path')
+    parser.add_argument('--stop_iter', type=int, default=40, help='Stop iteration at, (default: 40)')
     args = parser.parse_args()
 
-    batch_size = batch_size // args.num_nodes
+    global batch_size, num_epochs, stop_iter
+    global log_file_name
+    log_file_name = f"timelog_{num_epochs}_{stop_iter}_num_nodes.csv"
+    with open(f'output/{log_file_name}', 'w+') as f:
+        f.write("epoch,iteration,elpased_time\n")
+    batch_size = total_batch_size // args.num_nodes
+    num_epochs = args.epoch
+    stop_iter = args.stop_iter
+
     for group in range(0, args.num_nodes):
         group_list.append(group)
 
     init_process(args.master_ip, args.rank, args.num_nodes, run)
-
-
