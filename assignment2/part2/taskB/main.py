@@ -51,7 +51,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
             # Communicating gradients
             for params in model.parameters():
                 params.grad = params.grad / group_size
-                dist.all_reduce(params.grad, op=dist.reduce_op.SUM, group=group, async_op=False)
+                dist.all_reduce(params.grad, op=dist.ReduceOp.SUM, group=group, async_op=False)
                 
             optimizer.step()
 
