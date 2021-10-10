@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ip=10.10.1.1
-iter=2 4 6 8 10
+iter=(2 4 6 8 10)
 
 mkdir -p output
 
