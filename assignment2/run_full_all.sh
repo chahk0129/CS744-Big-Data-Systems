@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cur=$(PWD)
+cur=$PWD
 
 ## run part1
 cd part1
