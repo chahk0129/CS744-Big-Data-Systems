@@ -1,0 +1,6 @@
+Files already downloaded and verified
+Files already downloaded and verified
+Train Epoch: 0 	 Iteration: 1 [255/50000 (1%)]	Loss: 2.543597	 elapsed time: 2.963
+Train Epoch: 0 	 Iteration: 21 [5355/50000 (11%)]	Loss: 2.619304	 elapsed time: 40.592
+Test set: Average loss: 3.1010, Accuracy: 1069/10000 (11%)
+
