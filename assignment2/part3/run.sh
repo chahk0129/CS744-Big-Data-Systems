@@ -17,10 +17,10 @@ node3=cs744/assignment2/part3
 export_cmd="export PATH=\"/users/hcha/miniconda3/bin:\$PATH\""
 
 ## create output directories 
-mkdir output;
-ssh node1 mkdir ${node1}/output
-ssh node2 mkdir ${node2}/output
-ssh node3 mkdir ${node3}/output
+mkdir -p output;
+ssh node1 mkdir -p ${node1}/output
+ssh node2 mkdir -p ${node2}/output
+ssh node3 mkdir -p ${node3}/output
 
 for n in $num_nodes; do
 	if [[ "$n" = "1" ]]; then
