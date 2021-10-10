@@ -10,3 +10,15 @@ Train Epoch: 0 	 Iteration: 1 [255/50000 (1%)]	Loss: 2.318664	 elapsed time: 2.4
 Train Epoch: 0 	 Iteration: 21 [5355/50000 (11%)]	Loss: 4.391564	 elapsed time: 26.050
 Test set: Average loss: 2.4473, Accuracy: 1126/10000 (11%)
 
+Files already downloaded and verified
+Files already downloaded and verified
+Train Epoch: 0 	 Iteration: 20 [5100/50000 (10%)]	Loss: 3.244702	 elapsed time: 23.720
+Train Epoch: 0 	 Iteration: 40 [10200/50000 (20%)]	Loss: 2.324034	 elapsed time: 22.130
+Test set: Average loss: 2.4473, Accuracy: 1126/10000 (11%)
+
+Files already downloaded and verified
+Files already downloaded and verified
+Train Epoch: 0 	 Iteration: 20 [5100/50000 (10%)]	Loss: 3.244702	 elapsed time: 24.043
+Train Epoch: 0 	 Iteration: 40 [10200/50000 (20%)]	Loss: 2.324034	 elapsed time: 22.158
+Test set: Average loss: 2.4473, Accuracy: 1126/10000 (11%)
+
