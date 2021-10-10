@@ -4,7 +4,6 @@ import torch
 import json
 import copy
 import numpy as np
-import pandas as pd
 from torchvision import datasets, transforms
 import torch.nn as nn
 import torch.nn.functional as F
@@ -27,28 +26,25 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
     criterion (nn.CrossEntropyLoss) : Loss function used to train the network
     epoch (int): Current epoch number
     """
-
-    # remember to exit the train loop at end of the epoch
-    running_loss = 0
-    running_count = 0
+    start_time = time.time()
+    log_iter_start_time = time.time()
     for batch_idx, (data, target) in enumerate(train_loader):
         # Reference: https://github.com/pytorch/examples/blob/master/mnist/main.py
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
         loss = criterion(output, target)
-        running_loss += loss.item()
-        running_count += batch_size
         loss.backward()
         optimizer.step()
-        if batch_idx % log_iter == 0:
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), running_loss))
-            # reset running loss, count
-            running_loss = 0
-            running_count = 0
 
+        elapsed_time = time.time() - start_time
+        start_time = time.time()
+        if batch_idx % log_iter == 0:
+            log_iter_elpased_time = time.time() - start_time
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\t elapsed time: {:.3f}'.format(
+                epoch, batch_idx * len(data) * group_size, len(train_loader.dataset),
+                100. * batch_idx / len(train_loader), loss.item(), log_iter_elapsed_time)) 
+            log_iter_start_time = time.time()
     return None
 
 def test_model(model, test_loader, criterion):
@@ -115,18 +111,6 @@ def main():
     model.to(device)
     optimizer = optim.SGD(model.parameters(), lr=0.1,
                           momentum=0.9, weight_decay=0.0001)
-    # running training for one epoch
-    df = pd.DataFrame()
-    for exp_num in range(args.exp_iter):
-        start_time = time.time()
-        train_model(model, train_loader, optimizer, training_criterion, epoch)
-        test_model(model, test_loader, training_criterion)
-        elapsed_time = time.time() - start_time
-        df = df.append({
-            'exp_num': exp_num,
-            'elapsed_time': elapsed_time
-        }, ignore_index=True)
-    df.to_csv(args.output_path)
 
 if __name__ == "__main__": 
     main()
