@@ -159,13 +159,14 @@ if __name__ == "__main__":
 
     global batch_size, num_epochs, stop_iter
     global log_file_name
-    log_file_name = f"timelog_{num_epochs}_{stop_iter}_num_nodes.csv"
-    with open(f'output/{log_file_name}', 'w+') as f:
-        f.write("epoch,iteration,elpased_time\n")
     batch_size = total_batch_size // args.num_nodes
     num_epochs = args.epoch
     stop_iter = args.stop_iter
 
+    log_file_name = f"timelog_{num_epochs}_{stop_iter}_num_nodes.csv"
+    with open(f'output/{log_file_name}', 'w+') as f:
+        f.write("epoch,iteration,elpased_time\n")
+    
     for group in range(0, args.num_nodes):
         group_list.append(group)
 
