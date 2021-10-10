@@ -38,6 +38,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
     log_iter_start_time = time.time()
     with open(f'output/{log_file_name}', 'a+') as f:
         for batch_idx, (data, target) in enumerate(train_loader):
+            batch_count = batch_idx + 1
             if batch_idx >= stop_iter:
                 break
             # Reference: https://github.com/pytorch/examples/blob/master/mnist/main.py
