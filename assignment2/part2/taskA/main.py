@@ -73,7 +73,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank):
             f.write(f"{epoch},{batch_count},{elapsed_time}\n")
             start_time = time.time()
 
-            if (batch_idx % log_iter == 0):
+            if (batch_count % log_iter == 0):
                 log_iter_elapsed_time = time.time() - log_iter_start_time
                 print('Train Epoch: {} \t Iteration: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\t elapsed time: {:.3f}'.format(
                     epoch, batch_count, batch_count * len(data) * group_size, len(train_loader.dataset),
