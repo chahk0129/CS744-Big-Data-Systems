@@ -145,6 +145,8 @@ if __name__ == "__main__":
     parser.add_argument('--rank', type=int, default=0, help='rank of node')
     parser.add_argument('--epoch', type=int, default=1, help='the number of epochs (default:1)')
     parser.add_argument('--stop_iter', type=int, default=40, help='Stop iteration at, (default: 40)')
+    parser.add_argument('--total_batch_size', type=int, default=256, help='total batch size')
+    
     args = parser.parse_args()
 
     global batch_size, num_epochs, stop_iter
