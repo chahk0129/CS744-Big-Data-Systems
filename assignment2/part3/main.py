@@ -18,7 +18,6 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 
 device = "cpu"
 torch.set_num_threads(4)
-total_batch_size = 256 # batch for one node
 log_iter = 20
 group_list = []
 
@@ -150,14 +149,16 @@ if __name__ == "__main__":
 
     global batch_size, num_epochs, stop_iter
     global log_file_name
+    total_batch_size = args.total_batch_size
     batch_size = int(total_batch_size // args.num_nodes)
+    
     num_epochs = args.epoch
     stop_iter = args.stop_iter
     master_ip = args.master_ip
     num_nodes = args.num_nodes
     rank = args.rank
 
-    log_file_name = f"timelog_{num_epochs}_{stop_iter}_{num_nodes}.csv"
+    log_file_name = f"timelog_{num_epochs}_{stop_iter}_{num_nodes}_{batch_size}.csv"
     with open(f'output/{log_file_name}', 'w+') as f:
         f.write("epoch,iteration,elpased_time\n")
     
