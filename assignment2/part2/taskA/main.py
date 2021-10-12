@@ -20,6 +20,9 @@ log_iter = 20
 group_list = []
 
 seed = 2021
+torch.manual_seed(seed)
+np.random.seed(seed)
+ 
 
 def train_model(model, train_loader, optimizer, criterion, epoch, rank):
     """
@@ -109,8 +112,6 @@ def init_process(master_ip, rank, size, fn, backend='gloo'):
 
 
 def run(rank, size):
-    torch.manual_seed(seed)
-    np.random.seed(seed)
     normalize = transforms.Normalize(mean=[x/255.0 for x in [125.3, 123.0, 113.9]],
                                 std=[x/255.0 for x in [63.0, 62.1, 66.7]])
     transform_train = transforms.Compose([
