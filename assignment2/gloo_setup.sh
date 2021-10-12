@@ -1,1 +1,1 @@
-echo "export GLOO_SOCKET_IFNAME=eth0"
+echo "export GLOO_SOCKET_IFNAME=eth1"
