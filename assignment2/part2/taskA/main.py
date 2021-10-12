@@ -125,13 +125,12 @@ def run(rank, size):
             normalize])
     training_set = datasets.CIFAR10(root="./data", train=True,
                                                 download=True, transform=transform_train)
-    sampler = DistributedSampler(training_set) if torch.distributed.is_available() else None
+    sampler = DistributedSampler(training_set, seed=seed) if torch.distributed.is_available() else None
     train_loader = torch.utils.data.DataLoader(training_set,
                                                     num_workers=2,
                                                     batch_size=batch_size,
                                                     sampler=sampler,
-                                                    pin_memory=True,
-                                                    seed=seed)
+                                                    pin_memory=True)
     test_set = datasets.CIFAR10(root="./data", train=False,
                                 download=True, transform=transform_test)
 
