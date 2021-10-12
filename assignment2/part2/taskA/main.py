@@ -19,6 +19,8 @@ torch.set_num_threads(4)
 log_iter = 20
 group_list = []
 
+seed = 2021
+
 def train_model(model, train_loader, optimizer, criterion, epoch, rank):
     """
     model (torch.nn.module): The model created to train
@@ -107,8 +109,8 @@ def init_process(master_ip, rank, size, fn, backend='gloo'):
 
 
 def run(rank, size):
-    torch.manual_seed(2021)
-    np.random.seed(2021)
+    torch.manual_seed(seed)
+    np.random.seed(seed)
     normalize = transforms.Normalize(mean=[x/255.0 for x in [125.3, 123.0, 113.9]],
                                 std=[x/255.0 for x in [63.0, 62.1, 66.7]])
     transform_train = transforms.Compose([
@@ -128,7 +130,8 @@ def run(rank, size):
                                                     num_workers=2,
                                                     batch_size=batch_size,
                                                     sampler=sampler,
-                                                    pin_memory=True)
+                                                    pin_memory=True,
+                                                    seed=seed)
     test_set = datasets.CIFAR10(root="./data", train=False,
                                 download=True, transform=transform_test)
 
